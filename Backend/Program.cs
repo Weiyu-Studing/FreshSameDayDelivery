@@ -1,24 +1,30 @@
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AppDbContext>(opt =>
+builder.Services.AddDbContext<AppDbContext>(o =>
 {
-    opt.UseSqlite("Data Source=FreshDb.db");
+    o.UseSqlite("Data Source=FreshDb.db");
 });
 
-builder.Services.AddCors(options =>
+builder.Services.AddCors(p =>
 {
-    options.AddPolicy("ReactPolicy", cfg =>
+    p.AddPolicy("Any", cfg =>
     {
-        cfg.AllowAnyOrigin()
-           .AllowAnyHeader()
-           .AllowAnyMethod();
+        cfg.AllowAnyOrigin();
+        cfg.AllowAnyHeader();
+        cfg.AllowAnyMethod();
     });
 });
 
@@ -30,12 +36,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-app.UseCors("ReactPolicy");
-
+app.UseRouting();
+app.UseCors("Any");
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
