@@ -8,7 +8,7 @@ function App() {
     const [products, setProducts] = useState([]);
     const [name, setName] = useState("");
     const [price, setPrice] = useState("");
-    const [categoryId, setCategoryId] = useState(1);
+    const [categoryId, setCategoryId] = useState(5);
 
     //read
     const fetchProducts = async () => {
@@ -36,7 +36,7 @@ function App() {
 
     return (
         <div style={{ padding: "2rem" }}>
-            <h1>Fresh Today - Week2 MVP</h1>
+            <h1>Fresh Today - UI TEXT</h1>
             <h3>Product List</h3>
             {products.map(p => (
                 <div key={p.productId}>
