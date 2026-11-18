@@ -1,4 +1,7 @@
-﻿public class Category
+﻿using System.ComponentModel.DataAnnotations;
+
+
+public class Category
 {
     public int CategoryId { get; set; }
     [Required]

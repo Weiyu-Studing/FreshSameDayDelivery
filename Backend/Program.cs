@@ -1,6 +1,10 @@
 using Backend.Models;
+using Backend.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,19 +14,27 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<AppDbContext>(o =>
-{
+builder.Services.AddDbContext<AppDbContext>(o => {
     o.UseSqlite("Data Source=FreshDb.db");
 });
 
 builder.Services.AddScoped<CategoryService>();
 
-
-builder.Services.AddCors(p =>
+var key = Encoding.ASCII.GetBytes("MY_SUPER_SECRET_KEY_1234567890123456");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
 {
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+builder.Services.AddAuthorization();
+
+builder.Services.AddCors(p => {
     p.AddPolicy("Any", cfg =>
     {
         cfg.AllowAnyOrigin();
@@ -33,14 +45,9 @@ builder.Services.AddCors(p =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseRouting();
 app.UseCors("Any");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

@@ -1,6 +1,8 @@
 ﻿using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Backend.Controllers;
 
@@ -12,6 +14,7 @@ public class ProductsController : ControllerBase
     public ProductsController(AppDbContext db) => _db = db;
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
     {
         return await _db.Products.Include(p => p.Category).ToListAsync();
@@ -26,7 +29,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
-    // [Authorize] // 这周后面打开
+    [Authorize]
     public async Task<ActionResult<Product>> PostProduct(Product product)
     {
         if (!ModelState.IsValid)
@@ -46,7 +49,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> PutProduct(int id, Product product)
     {
         if (id != product.ProductId) return BadRequest();
@@ -76,7 +79,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> DeleteProduct(int id)
     {
         var p = await _db.Products.FindAsync(id);

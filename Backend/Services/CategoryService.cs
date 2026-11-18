@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using Backend.Models;
+
+namespace Backend.Services;
+
 public class CategoryService
 {
     private readonly AppDbContext _db;
@@ -5,11 +10,10 @@ public class CategoryService
     {
         _db = db;
     }
-
-    
     public async Task<bool> CanDeleteCategory(int categoryId)
     {
-        var hasProduct = await _db.Products.AnyAsync(p => p.CategoryId == categoryId);
+        bool hasProduct = await _db.Products.AnyAsync(p => p.CategoryId == categoryId);
         return !hasProduct;
     }
 }
+
