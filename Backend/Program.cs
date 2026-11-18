@@ -18,6 +18,9 @@ builder.Services.AddDbContext<AppDbContext>(o =>
     o.UseSqlite("Data Source=FreshDb.db");
 });
 
+builder.Services.AddScoped<CategoryService>();
+
+
 builder.Services.AddCors(p =>
 {
     p.AddPolicy("Any", cfg =>
